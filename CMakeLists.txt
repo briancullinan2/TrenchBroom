@@ -152,12 +152,34 @@ include_directories(${CMAKE_SOURCE_DIR}/miniz)
 include_directories(${CMAKE_SOURCE_DIR}/freetype/include)
 include_directories(${CMAKE_SOURCE_DIR}/wasm)
 
-target_link_libraries(${MPEngine}
-${MPDir}/wasm/${COMPILE_PLATFORM}/wasi-sdk-22.0/share/wasi-sysroot/lib/wasm32-wasi/libc++.a
-${MPDir}/wasm/${COMPILE_PLATFORM}/wasi-sdk-22.0/share/wasi-sysroot/lib/wasm32-wasi/libc++abi.a
-${MPDir}/wasm/${COMPILE_PLATFORM}/wasi-sdk-22.0/share/wasi-sysroot/lib/wasm32-wasi/libc.a
-${MPDir}/wasm/${COMPILE_PLATFORM}/wasi-sdk-22.0/lib/clang/18/lib/wasi/libclang_rt.builtins-wasm32.a
+add_compile_options(-fvisibility=default)
+add_compile_options(--target=wasm32-wasi)
+# add_compile_options(-fno-rtti)
+add_compile_options(-fno-inline)
+add_compile_options(-fPIC)
+add_compile_options(-fno-short-enums)
+add_compile_options(-ftree-vectorize -fsigned-char)
+add_compile_options(-Wimplicit)
+add_compile_options(-fno-common)
+add_compile_options(--no-standard-libraries)
+add_compile_options(-fstrict-aliasing)
+add_compile_options(-fwasm-exceptions)
+add_compile_options(-Wno-sign-conversion)
+
+add_link_options(
+  /Users/briancullinan/emsdk/darwin/wasi-sdk-22.0/share/wasi-sysroot/lib/wasm32-wasi/libc++experimental.a
+  /Users/briancullinan/emsdk/darwin/wasi-sdk-22.0/share/wasi-sysroot/lib/wasm32-wasi/libc++abi.a
+  /Users/briancullinan/emsdk/darwin/wasi-sdk-22.0/share/wasi-sysroot/lib/wasm32-wasi/libc++.a
+  /Users/briancullinan/emsdk/darwin/wasi-sdk-22.0/share/wasi-sysroot/lib/wasm32-wasi/librt.a
+  /Users/briancullinan/emsdk/darwin/wasi-sdk-22.0/share/wasi-sysroot/lib/wasm32-wasi/libc.a
+  /Users/briancullinan/emsdk/darwin/wasi-sdk-22.0/share/wasi-sysroot/lib/wasm32-wasi/libsetjmp.a
+  /Users/briancullinan/emsdk/darwin/wasi-sdk-22.0/lib/clang/18/lib/wasi/libclang_rt.builtins-wasm32.a
+  ${CMAKE_SOURCE_DIR}/qt5/qtbase/lib/libQt6Core.a
+  ${CMAKE_SOURCE_DIR}/qt5/qtbase/lib/libQt6Gui.a
+  ${CMAKE_SOURCE_DIR}/qt5/qtbase/lib/libQt6Widgets.a
 )
+add_link_options(-Wl,--import-memory,--import-table)
+add_link_options(-Wl,--error-limit=0)
 
 endif()
 

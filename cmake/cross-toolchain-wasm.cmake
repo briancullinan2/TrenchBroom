@@ -18,7 +18,6 @@ set( CMAKE_FIND_ROOT_PATH_MODE_PROGRAM ONLY )
 set( CMAKE_FIND_ROOT_PATH_MODE_LIBRARY NEVER )
 set( CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY )
 
-add_compile_options(--target=wasm32-wasi)
 add_compile_options(-D__EMSCRIPTEN__=1)
 add_compile_options(-D__WASM__=1)
 add_compile_options(-D__wasi__=1)
@@ -32,7 +31,7 @@ set(THREADS_PREFER_PTHREAD_FLAG FALSE)
 set(CMAKE_THREAD_LIBS_INIT FALSE)
 set(CMAKE_USE_PTHREADS_INIT FALSE)
 
-list(APPEND CMAKE_C_FLAGS -stdlib=gnu11)
-list(APPEND CMAKE_CXX_FLAGS -stdlib=libc++)
+# list(APPEND CMAKE_C_FLAGS -stdlib=gnu11)
+# list(APPEND CMAKE_CXX_FLAGS -stdlib=libc++)
 
 

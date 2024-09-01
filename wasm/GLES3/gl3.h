@@ -370,7 +370,7 @@ typedef khronos_uint8_t GLubyte;
 #define GL_COLOR_ATTACHMENT0              0x8CE0
 #define GL_DEPTH_ATTACHMENT               0x8D00
 #define GL_STENCIL_ATTACHMENT             0x8D20
-#define GL_NONE                           0
+#define GL_NONE                           0x0
 #define GL_FRAMEBUFFER_COMPLETE           0x8CD5
 #define GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT 0x8CD6
 #define GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT 0x8CD7

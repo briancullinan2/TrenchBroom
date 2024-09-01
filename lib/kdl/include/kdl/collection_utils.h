@@ -47,9 +47,9 @@ auto combine_cmp(First first)
  * @param rest the remaining comparators
  */
 template <typename First, typename... Rest>
-auto combine_cmp(First first, Rest... rest)
+auto combine_cmp(First f, Rest... r)
 {
-  return [first = std::move(first), rest = std::move(rest...)](
+  return [first = std::move(f), rest = std::move(r...)](
            const auto& lhs, const auto& rhs) {
     return first(lhs, rhs)   ? true
            : first(rhs, lhs) ? false

@@ -143,8 +143,9 @@ namespace detail
 template <typename T>
 ResourceState<T> triggerLoading(ResourceUnloaded<T> state, TaskRunner taskRunner)
 {
-  auto loader = std::move(state.loader);
-  auto future = std::make_unique<LoaderTaskResult<T>>(loader());
+  auto future = taskRunner([loader = std::move(state.loader)]() {
+    return std::make_unique<LoaderTaskResult<T>>(loader());
+  });
   return ResourceLoading<T>{std::move(future)};
 }
 

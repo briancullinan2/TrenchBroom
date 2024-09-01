@@ -768,7 +768,11 @@ typedef double		GLclampd;	/* double precision float in [0,1] */
 #define GL_RGBA2				0x8055
 #define GL_RGBA4				0x8056
 #define GL_RGB5_A1				0x8057
-#define GL_RGBA8				0x8058
+#ifdef __WASM__
+#define GL_RGBA8                          GL_RGBA
+#else
+#define GL_RGBA8                          0x8058
+#endif
 #define GL_RGB10_A2				0x8059
 #define GL_RGBA12				0x805A
 #define GL_RGBA16				0x805B

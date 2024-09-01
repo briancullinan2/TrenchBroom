@@ -29,7 +29,7 @@
 #define _SDL_opengl_h
 
 /* XXX Emscripten */
-#define GL_GLEXT_PROTOTYPES
+#define GL_GLEXT_PROTOTYPES 1
 
 #include "SDL_config.h"
 
@@ -109,7 +109,9 @@ extern "C" {
 /* Header file version number, required by OpenGL ABI for Linux */
 /* glext.h last updated $Date: 2010-08-03 01:30:25 -0700 (Tue, 03 Aug 2010) $ */
 /* Current version at http://www.opengl.org/registry/ */
+#ifndef GL_GLEXT_VERSION
 #define GL_GLEXT_VERSION 64
+#endif
 /* Function declaration macros - to move into glplatform.h */
 
 #if defined(_WIN32) && !defined(APIENTRY) && !defined(__CYGWIN__) && !defined(__SCITECH_SNAP__)

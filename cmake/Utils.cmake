@@ -94,7 +94,7 @@ macro(set_compiler_config TARGET)
             target_link_options(${TARGET} PRIVATE LINKER:-no_warn_duplicate_libraries)
         endif()
 
-        target_compile_options(${TARGET} PRIVATE -Wall -Wextra -Wconversion -Wshadow-all -Wnon-virtual-dtor -Wmissing-prototypes -pedantic)
+        target_compile_options(${TARGET} PRIVATE -Wall -Wextra -Wconversion -Wnon-virtual-dtor -Wmissing-prototypes -pedantic)
         target_compile_options(${TARGET} PRIVATE -Wno-global-constructors -Wno-exit-time-destructors -Wno-padded -Wno-format-nonliteral -Wno-used-but-marked-unused)
 
         # disable C++98 compatibility warnings
