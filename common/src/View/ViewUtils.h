@@ -19,12 +19,18 @@
 
 #pragma once
 
+#include <QWidget>
+#include <QString>
+#include <QStringList>
+
 #include <memory>
 #include <string>
 
+#ifndef __WASM__
 class QWidget;
 class QString;
 class QStringList;
+#endif
 
 namespace TrenchBroom
 {

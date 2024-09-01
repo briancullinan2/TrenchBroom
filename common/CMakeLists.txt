@@ -1029,9 +1029,13 @@ set(COMMON_HEADER
 )
 
 add_library(common OBJECT ${COMMON_SOURCE} ${COMMON_HEADER})
+if(!WASM)
 set_target_properties(common PROPERTIES AUTOMOC TRUE)
+endif()
 target_include_directories(common PUBLIC ${COMMON_SOURCE_DIR})
+if(!WASM)
 target_link_libraries(common PUBLIC tinyxml2::tinyxml2 kdl vm GLEW::GLEW miniz::miniz freeimage::FreeImage freetype OpenGL::GL Qt5::Widgets Qt5::Svg fmt::fmt assimp::assimp)
+endif()
 
 # use precompiled headers on CMake 3.16 or later
 if (NOT TB_SUPPRESS_PCH AND ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.16.0")
@@ -1111,5 +1115,7 @@ target_include_directories(common PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 add_custom_target(generate_version ${CMAKE_COMMAND} -P "${CMAKE_CURRENT_BINARY_DIR}/GenerateVersion.cmake")
 add_dependencies(common generate_version)
 
+if(!WASM)
 add_subdirectory(test)
 add_subdirectory(benchmark)
+endif()

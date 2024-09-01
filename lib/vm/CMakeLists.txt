@@ -64,4 +64,6 @@ else()
     message(FATAL_ERROR "Cannot set compile options for target")
 endif()
 
+if(!WASM)
 add_subdirectory(test)
+endif()

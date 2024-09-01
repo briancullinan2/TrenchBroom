@@ -21,10 +21,12 @@
 #ifdef _MSC_VER
 #include <QMutexLocker>
 
+#ifndef __WASM__
 #include "StackWalker.h"
 #endif
 #else
 #include <execinfo.h>
+#endif
 #endif
 
 #include "TrenchBroomStackWalker.h"
@@ -104,6 +106,8 @@ std::string TrenchBroomStackWalker::getStackTrace()
 {
   const int MaxDepth = 256;
   void* callstack[MaxDepth];
+  std::stringstream ss;
+#ifndef __WASM__
   const int frames = backtrace(callstack, MaxDepth);
 
   // copy into a vector
@@ -111,13 +115,13 @@ std::string TrenchBroomStackWalker::getStackTrace()
   if (framesVec.empty())
     return "";
 
-  std::stringstream ss;
   char** strs = backtrace_symbols(&framesVec.front(), static_cast<int>(framesVec.size()));
   for (size_t i = 0; i < framesVec.size(); i++)
   {
     ss << strs[i] << std::endl;
   }
   free(strs);
+#endif
   return ss.str();
 }
 #endif

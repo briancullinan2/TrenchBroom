@@ -16,7 +16,9 @@ if(POLICY CMP0063)
   cmake_policy(SET CMP0063 NEW)
 endif()
 
+if(!CMAKE_TOOLCHAIN_FILE)
 set(CMAKE_TOOLCHAIN_FILE "${CMAKE_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake")
+endif()
 set(VCPKG_OVERLAY_PORTS "${CMAKE_SOURCE_DIR}/vcpkg-overlay-ports/freeimage;${CMAKE_SOURCE_DIR}/vcpkg-overlay-ports/openexr")
 
 set(CMAKE_C_VISIBILITY_PRESET hidden)
@@ -87,6 +89,7 @@ endif()
 
 include(cmake/Utils.cmake)
 
+if(!WASM)
 # Find Git
 find_package(Git)
 
@@ -105,6 +108,8 @@ if(NOT PANDOC_PATH)
   endif()
 endif()
 
+endif()
+
 # Prevent overriding the parent project's compiler/linker
 # settings on Windows
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
@@ -112,6 +117,7 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 # Prevent gtest from being installed
 set(INSTALL_GTEST OFF CACHE BOOL "" FORCE)
 
+if(!WASM)
 find_package(assimp CONFIG REQUIRED)
 find_package(freeimage CONFIG REQUIRED)
 find_package(freetype CONFIG REQUIRED)
@@ -124,6 +130,26 @@ find_package(tinyxml2 CONFIG REQUIRED)
 # Find Qt and OpenGL
 find_package(OpenGL REQUIRED)
 find_package(Qt5 COMPONENTS Core Widgets Svg Test REQUIRED)
+else()
+include_directories(${CMAKE_SOURCE_DIR}/darwin/wasi-sdk-22.0/share/wasi-sysroot/include/wasm32-wasi/c++/v1)
+include_directories(${CMAKE_SOURCE_DIR}/darwin/wasi-sdk-22.0/share/wasi-sysroot/include/wasm32-wasi)
+include_directories(${CMAKE_SOURCE_DIR}/fmt/include)
+include_directories(${CMAKE_SOURCE_DIR}/qt5/qtbase/include)
+include_directories(${CMAKE_SOURCE_DIR}/qt5/qtbase/include/QtCore)
+include_directories(${CMAKE_SOURCE_DIR}/qt5/qtbase/include/QtCore5Compat)
+include_directories(${CMAKE_SOURCE_DIR}/qt5/qtbase/include/QtGui)
+include_directories(${CMAKE_SOURCE_DIR}/qt5/qtbase/include/QtSvg)
+include_directories(${CMAKE_SOURCE_DIR}/qt5/qtbase/include/QtWidgets)
+include_directories(${CMAKE_SOURCE_DIR}/qt5/qtbase/include/QtOpenGLWidgets)
+include_directories(${CMAKE_SOURCE_DIR}/lib/kdl/include)
+include_directories(${CMAKE_SOURCE_DIR}/lib/vm/include)
+include_directories(${CMAKE_SOURCE_DIR}/FreeImage/Source)
+include_directories(${CMAKE_SOURCE_DIR}/assimp/include)
+include_directories(${CMAKE_SOURCE_DIR}/tinyxml2)
+include_directories(${CMAKE_SOURCE_DIR}/miniz)
+include_directories(${CMAKE_SOURCE_DIR}/freetype/include)
+include_directories(${CMAKE_SOURCE_DIR}/wasm)
+endif()
 
 # Qt will warn about API's that were deprecated after 5.9.5.
 # Since we're not raising our minimum Qt version, and can't use the replacement
@@ -132,16 +158,22 @@ add_compile_definitions(QT_NO_DEPRECATED_WARNINGS=1)
 
 # Find threads lib, needed to work around a gtest bug, see: https://stackoverflow.com/questions/21116622/undefined-reference-to-pthread-key-create-linker-error
 # The googletest target links to this
+if( !WASM )
 find_package(Threads)
 
 # Populate version variables using git
 get_git_describe("${GIT_EXECUTABLE}" "${CMAKE_SOURCE_DIR}" GIT_DESCRIBE)
 get_app_version(GIT_DESCRIBE APP_VERSION_YEAR APP_VERSION_NUMBER)
 set(APP_BUILD_TYPE "${CMAKE_BUILD_TYPE}")
+endif()
 
 # Some global variables used in several targets
 set(APP_DIR "${CMAKE_SOURCE_DIR}/app")
 set(APP_RESOURCE_DIR "${APP_DIR}/resources")
+
+if( !WASM )
+  message( FATAL_ERROR "LEARN TO CMAKE." )
+endif()
 
 add_subdirectory(lib)
 add_subdirectory(dump-shortcuts)

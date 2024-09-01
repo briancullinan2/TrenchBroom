@@ -20,6 +20,9 @@
 #include "Actions.h"
 
 #include <QKeySequence>
+#ifdef __WASM__
+#define QKeySequence(x) NULL
+#endif
 #include <QString>
 
 #include "Assets/EntityDefinition.h"
@@ -143,7 +146,7 @@ void Action::setKeySequence(const QKeySequence& keySequence) const
 {
   auto& prefs = PreferenceManager::instance();
   auto& pref = prefs.dynamicPreference(m_preferencePath, QKeySequence(m_defaultShortcut));
-  prefs.set(pref, keySequence);
+  prefs.set(pref, QKeySequence());
 }
 
 void Action::resetKeySequence() const
@@ -1182,7 +1185,7 @@ void ActionManager::createEditMenu()
   editMenu.addItem(createMenuAction(
     std::filesystem::path{"Menu/Edit/Clear Repeatable Commands"},
     QObject::tr("Clear Repeatable Commands"),
-    +Qt::CTRL + Qt::SHIFT + Qt::Key_R,
+    QKeySequence(+Qt::CTRL + Qt::SHIFT + Qt::Key_R),
     [](ActionExecutionContext& context) { context.frame()->clearRepeatableCommands(); },
     [](ActionExecutionContext& context) {
       return context.hasDocument() && context.frame()->hasRepeatableCommands();
@@ -1222,7 +1225,7 @@ void ActionManager::createEditMenu()
     createMenuAction(
       std::filesystem::path{"Menu/Edit/Paste at Original Position"},
       QObject::tr("Paste at Original Position"),
-      +Qt::CTRL + Qt::ALT + Qt::Key_V,
+      QKeySequence(+Qt::CTRL + Qt::ALT + Qt::Key_V),
       [](ActionExecutionContext& context) { context.frame()->pasteAtOriginalPosition(); },
       [](ActionExecutionContext& context) {
         return context.hasDocument() && context.frame()->canPaste();
@@ -1333,7 +1336,7 @@ void ActionManager::createEditMenu()
   editMenu.addItem(createMenuAction(
     std::filesystem::path{"Menu/Edit/Ungroup"},
     QObject::tr("Ungroup Selected Objects"),
-    +Qt::CTRL + Qt::SHIFT + Qt::Key_G,
+    QKeySequence(+Qt::CTRL + Qt::SHIFT + Qt::Key_G),
     [](ActionExecutionContext& context) { context.frame()->ungroupSelectedObjects(); },
     [](ActionExecutionContext& context) {
       return context.hasDocument() && context.frame()->canUngroupSelectedObjects();
@@ -1534,7 +1537,7 @@ void ActionManager::createEditMenu()
   csgMenu.addItem(createMenuAction(
     std::filesystem::path{"Menu/Edit/CSG/Hollow"},
     QObject::tr("Hollow"),
-    +Qt::CTRL + Qt::SHIFT + Qt::Key_K,
+    QKeySequence(+Qt::CTRL + Qt::SHIFT + Qt::Key_K),
     [](ActionExecutionContext& context) { context.frame()->csgHollow(); },
     [](ActionExecutionContext& context) {
       return context.hasDocument() && context.frame()->canDoCsgHollow();
@@ -1552,7 +1555,7 @@ void ActionManager::createEditMenu()
   editMenu.addItem(createMenuAction(
     std::filesystem::path{"Menu/Edit/Snap Vertices to Integer"},
     QObject::tr("Snap Vertices to Integer"),
-    +Qt::CTRL + Qt::SHIFT + Qt::Key_V,
+    QKeySequence(+Qt::CTRL + Qt::SHIFT + Qt::Key_V),
     [](ActionExecutionContext& context) { context.frame()->snapVerticesToInteger(); },
     [](ActionExecutionContext& context) {
       return context.hasDocument() && context.frame()->canSnapVertices();
@@ -1560,7 +1563,7 @@ void ActionManager::createEditMenu()
   editMenu.addItem(createMenuAction(
     std::filesystem::path{"Menu/Edit/Snap Vertices to Grid"},
     QObject::tr("Snap Vertices to Grid"),
-    +Qt::CTRL + Qt::ALT + Qt::SHIFT + Qt::Key_V,
+    QKeySequence(+Qt::CTRL + Qt::ALT + Qt::SHIFT + Qt::Key_V),
     [](ActionExecutionContext& context) { context.frame()->snapVerticesToGrid(); },
     [](ActionExecutionContext& context) {
       return context.hasDocument() && context.frame()->canSnapVertices();
@@ -1756,10 +1759,12 @@ void ActionManager::createViewMenu()
     [](ActionExecutionContext& context) {
       return context.hasDocument() && context.frame()->canMoveCameraToPreviousPoint();
     }));
-  cameraMenu.addItem(createMenuAction(
+
+  cameraMenu.addItem(createAction(
     std::filesystem::path{"Menu/View/Camera/Reset 2D Cameras"},
     QObject::tr("Reset 2D Cameras"),
-    +Qt::CTRL + Qt::SHIFT + Qt::Key_U,
+    ActionContext::Any,
+    QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_U),
     [](ActionExecutionContext& context) { context.frame()->reset2dCameras(); },
     [](ActionExecutionContext& context) {
       return context.hasDocument() && !pref(Preferences::Link2DCameras);
@@ -1767,7 +1772,7 @@ void ActionManager::createViewMenu()
   cameraMenu.addItem(createMenuAction(
     std::filesystem::path{"Menu/View/Camera/Focus on Selection"},
     QObject::tr("Focus Camera on Selection"),
-    +Qt::CTRL + Qt::Key_U,
+    QKeySequence(Qt::CTRL + Qt::Key_U),
     [](ActionExecutionContext& context) { context.frame()->focusCameraOnSelection(); },
     [](ActionExecutionContext& context) {
       return context.hasDocument() && context.frame()->canFocusCamera();
@@ -1783,30 +1788,32 @@ void ActionManager::createViewMenu()
   viewMenu.addItem(createMenuAction(
     std::filesystem::path{"Menu/View/Isolate"},
     QObject::tr("Isolate Selection"),
-    +Qt::CTRL + Qt::Key_I,
+    QKeySequence(Qt::CTRL + Qt::Key_I),
     [](ActionExecutionContext& context) { context.frame()->isolateSelection(); },
     [](ActionExecutionContext& context) {
       return context.hasDocument() && context.frame()->canIsolateSelection();
     }));
-  viewMenu.addItem(createMenuAction(
+  viewMenu.addItem(createAction(
     std::filesystem::path{"Menu/View/Hide"},
     QObject::tr("Hide Selection"),
-    +Qt::CTRL + Qt::ALT + Qt::Key_I,
+    ActionContext::Any,
+    QKeySequence(Qt::CTRL + Qt::ALT + Qt::Key_I),
     [](ActionExecutionContext& context) { context.frame()->hideSelection(); },
     [](ActionExecutionContext& context) {
       return context.hasDocument() && context.frame()->canHideSelection();
     }));
-  viewMenu.addItem(createMenuAction(
+  viewMenu.addItem(createAction(
     std::filesystem::path{"Menu/View/Show All"},
     QObject::tr("Show All"),
-    +Qt::CTRL + Qt::SHIFT + Qt::Key_I,
+    ActionContext::Any,
+    QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_I),
     [](ActionExecutionContext& context) { context.frame()->showAll(); },
     [](ActionExecutionContext& context) { return context.hasDocument(); }));
   viewMenu.addSeparator();
   viewMenu.addItem(createMenuAction(
     std::filesystem::path{"Menu/View/Switch to Map Inspector"},
     QObject::tr("Show Map Inspector"),
-    +Qt::CTRL + Qt::Key_1,
+    QKeySequence(Qt::CTRL + Qt::Key_1),
     [](ActionExecutionContext& context) {
       context.frame()->switchToInspectorPage(InspectorPage::Map);
     },
@@ -1814,7 +1821,7 @@ void ActionManager::createViewMenu()
   viewMenu.addItem(createMenuAction(
     std::filesystem::path{"Menu/View/Switch to Entity Inspector"},
     QObject::tr("Show Entity Inspector"),
-    +Qt::CTRL + Qt::Key_2,
+    QKeySequence(Qt::CTRL + Qt::Key_2),
     [](ActionExecutionContext& context) {
       context.frame()->switchToInspectorPage(InspectorPage::Entity);
     },
@@ -1822,7 +1829,7 @@ void ActionManager::createViewMenu()
   viewMenu.addItem(createMenuAction(
     std::filesystem::path{"Menu/View/Switch to Face Inspector"},
     QObject::tr("Show Face Inspector"),
-    +Qt::CTRL + Qt::Key_3,
+    QKeySequence(Qt::CTRL + Qt::Key_3),
     [](ActionExecutionContext& context) {
       context.frame()->switchToInspectorPage(InspectorPage::Face);
     },
@@ -1831,7 +1838,7 @@ void ActionManager::createViewMenu()
   viewMenu.addItem(createMenuAction(
     std::filesystem::path{"Menu/View/Toggle Toolbar"},
     QObject::tr("Toggle Toolbar"),
-    +Qt::CTRL + Qt::ALT + Qt::Key_T,
+    QKeySequence(Qt::CTRL + Qt::ALT + Qt::Key_T),
     [](ActionExecutionContext& context) { context.frame()->toggleToolbar(); },
     [](ActionExecutionContext& context) { return context.hasDocument(); },
     [](ActionExecutionContext& context) {
@@ -1840,7 +1847,7 @@ void ActionManager::createViewMenu()
   viewMenu.addItem(createMenuAction(
     std::filesystem::path{"Menu/View/Toggle Info Panel"},
     QObject::tr("Toggle Info Panel"),
-    +Qt::CTRL + Qt::Key_4,
+    QKeySequence(Qt::CTRL + Qt::Key_4),
     [](ActionExecutionContext& context) { context.frame()->toggleInfoPanel(); },
     [](ActionExecutionContext& context) { return context.hasDocument(); },
     [](ActionExecutionContext& context) {

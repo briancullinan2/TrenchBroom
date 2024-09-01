@@ -20,7 +20,9 @@
 #include "Thread.h"
 
 #include <QApplication>
+#ifndef __WASM__
 #include <QThread>
+#endif
 
 #include "Ensure.h"
 
@@ -29,6 +31,10 @@ namespace TrenchBroom
 bool isMainThread()
 {
   ensure(qApp != nullptr, "QApplication must have been created");
+#ifndef __WASM__
   return (qApp->thread() == QThread::currentThread());
+#else
+  return true;
+#endif
 }
 } // namespace TrenchBroom

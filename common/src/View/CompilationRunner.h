@@ -20,7 +20,9 @@
 #pragma once
 
 #include <QObject>
+#ifndef __WASM__
 #include <QProcess> // for QProcess::ProcessError
+#endif
 
 #include "Macros.h"
 #include "Model/CompilationTask.h"
@@ -145,8 +147,10 @@ class CompilationRunToolTaskRunner : public CompilationTaskRunner
   Q_OBJECT
 private:
   Model::CompilationRunTool m_task;
+#ifndef __WASM__
   QProcess* m_process{nullptr};
   bool m_terminated{false};
+#endif
 
 public:
   CompilationRunToolTaskRunner(
@@ -161,8 +165,10 @@ private:
   void startProcess();
   std::string cmd();
 private slots:
+#ifndef __WASM__
   void processErrorOccurred(QProcess::ProcessError processError);
   void processFinished(int exitCode, QProcess::ExitStatus exitStatus);
+#endif
   void processReadyReadStandardError();
   void processReadyReadStandardOutput();
 

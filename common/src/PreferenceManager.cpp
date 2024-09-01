@@ -356,9 +356,11 @@ void AppPreferenceManager::savePreferenceToCache(PreferenceBase& pref)
 
 void AppPreferenceManager::validatePreference(PreferenceBase& preference)
 {
+#ifndef __WASM__
   ensure(
     qApp->thread() == QThread::currentThread(),
     "PreferenceManager can only be used on the main thread");
+#endif
 
   if (!preference.valid())
   {
@@ -368,9 +370,11 @@ void AppPreferenceManager::validatePreference(PreferenceBase& preference)
 
 void AppPreferenceManager::savePreference(PreferenceBase& preference)
 {
+#ifndef __WASM__
   ensure(
     qApp->thread() == QThread::currentThread(),
     "PreferenceManager can only be used on the main thread");
+#endif
 
   markAsUnsaved(preference);
 

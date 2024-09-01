@@ -142,7 +142,9 @@ std::unique_ptr<OwningBufferFile> CFile::buffer() const
 
 Result<void> CFile::read(char* val, const size_t position, const size_t size) const
 {
+#ifndef __WASM__
   auto guard = std::lock_guard{m_mutex};
+#endif
 
   const auto currentPosition = std::ftell(m_file.get());
   if (currentPosition < 0)

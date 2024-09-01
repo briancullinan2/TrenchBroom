@@ -60,7 +60,9 @@
 #include <QGuiApplication>
 #else
 #include <QApplication>
+#ifndef __WASM__
 #include <QDesktopWidget>
+#endif
 #endif
 
 namespace TrenchBroom

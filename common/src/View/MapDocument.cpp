@@ -130,7 +130,9 @@
 #include <cassert>
 #include <cstdlib> // for std::abs
 #include <map>
+#ifndef __WASM__
 #include <mutex>
+#endif
 #include <sstream>
 #include <string>
 #include <type_traits>
@@ -4238,9 +4240,8 @@ void MapDocument::processResourcesSync(const Assets::ProcessContext& processCont
   {
     auto processedResourceIds = m_resourceManager->process(
       [](auto task) {
-        auto promise = std::promise<std::unique_ptr<Assets::TaskResult>>{};
-        promise.set_value(task());
-        return promise.get_future();
+        auto promise = std::unique_ptr<Assets::TaskResult>{};
+        return promise;
       },
       processContext);
 
@@ -4258,7 +4259,7 @@ void MapDocument::processResourcesSync(const Assets::ProcessContext& processCont
 void MapDocument::processResourcesAsync(const Assets::ProcessContext& processContext)
 {
   const auto processedResourceIds = m_resourceManager->process(
-    [](auto task) { return std::async(std::move(task)); },
+    [](auto task) { return task(); },
     processContext,
     std::chrono::milliseconds{20});
 

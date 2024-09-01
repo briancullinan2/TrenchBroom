@@ -135,6 +135,7 @@ void EntityPropertyTable::keyPressEvent(QKeyEvent* event)
   }
 }
 
+#ifndef __WASM__
 /**
  * The decorations (padlock icon for locked cells) goes on the right of the text
  */
@@ -147,6 +148,7 @@ QStyleOptionViewItem EntityPropertyTable::viewOptions() const
   options.decorationSize = QSize{12, 12};
   return options;
 }
+#endif
 
 /**
  * Disable keyboard searching, it's undesirable for our use case.

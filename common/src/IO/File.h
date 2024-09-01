@@ -27,7 +27,9 @@
 #include <cstdio>
 #include <filesystem>
 #include <memory>
+#ifndef __WASM__
 #include <mutex>
+#endif
 
 namespace TrenchBroom::IO
 {
@@ -95,7 +97,9 @@ public:
 private:
   kdl::resource<std::FILE*> m_file;
   size_t m_size;
+#ifndef __WASM__
   mutable std::mutex m_mutex;
+#endif
 
   /**
    * Creates a new file with the given file ptr and size in bytes.

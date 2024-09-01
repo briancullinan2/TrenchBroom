@@ -21,7 +21,9 @@
 
 #include <QApplication>
 #include <QDebug>
+#ifndef __WASM__
 #include <QDesktopWidget>
+#endif
 #include <QWindow>
 
 namespace TrenchBroom

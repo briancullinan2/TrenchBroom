@@ -28,7 +28,9 @@
 #include <QPalette>
 #include <QPixmap>
 #include <QSvgRenderer>
+#ifndef __WASM__
 #include <QThread>
+#endif
 
 #include "Assets/Material.h"
 #include "Assets/Texture.h"
@@ -136,7 +138,9 @@ QImage renderSvgToImage(
 
   auto paint = QPainter{&image};
   svgSource.render(&paint);
+#ifndef __WASM__
   image.setDevicePixelRatio(devicePixelRatio);
+#endif
 
   if (invert && image.isGrayscale())
   {
@@ -167,9 +171,11 @@ void renderSvgToIcon(
 
 QPixmap loadSVGPixmap(const std::filesystem::path& imagePath)
 {
+#ifndef __WASM__
   ensure(
     qApp->thread() == QThread::currentThread(),
     "loadSVGIcon can only be used on the main thread");
+#endif
 
   static auto cache = std::map<std::filesystem::path, QPixmap>{};
   if (const auto it = cache.find(imagePath); it != cache.end())
@@ -206,10 +212,11 @@ QIcon loadSVGIcon(const std::filesystem::path& imagePath)
   // Without it, the .svg files would be read from disk and decoded each time this is
   // called, which is slow. We never evict from the cache which is assumed to be OK
   // because this is just used for icons and there's a relatively small set of them.
-
+#ifndef __WASM__
   ensure(
     qApp->thread() == QThread::currentThread(),
     "loadSVGIcon can only be used on the main thread");
+#endif
 
   static auto cache = std::map<std::filesystem::path, QIcon>{};
   if (const auto it = cache.find(imagePath); it != cache.end())

@@ -437,6 +437,29 @@ private:
       statusTip);
   }
 
+  template <class ExecuteFn, class EnabledFn, class CheckedFn>
+  const Action* createMenuAction(
+    const std::filesystem::path& preferencePath,
+    const QString& label,
+    const QKeySequence& key,
+    const ExecuteFn& execute,
+    const EnabledFn& enabled,
+    const CheckedFn& checked,
+    const std::filesystem::path& iconPath = std::filesystem::path(),
+    const QString& statusTip = QString())
+  {
+    return createAction(
+      preferencePath,
+      label,
+      ActionContext::Any,
+      key,
+      execute,
+      enabled,
+      checked,
+      iconPath,
+      statusTip);
+  }
+
   template <class ExecuteFn, class EnabledFn>
   const Action* createAction(
     const std::filesystem::path& preferencePath,

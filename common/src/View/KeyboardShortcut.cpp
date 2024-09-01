@@ -23,7 +23,9 @@
 #include <QKeyEvent>
 #include <QString>
 #include <QTextStream>
+#ifndef __WASM__
 #include <QThread>
+#endif
 
 #include "Ensure.h"
 
@@ -423,9 +425,11 @@ static std::unordered_map<int, int> qtKeyToWxMap()
 
 int qtKeyToWx(const int qtKey)
 {
+#ifndef __WASM__
   ensure(
     qApp->thread() == QThread::currentThread(),
     "qtKeyToWx() can only be used on the main thread");
+#endif
 
   static std::unordered_map<int, int> qtToWx;
   if (qtToWx.empty())

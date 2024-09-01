@@ -28,7 +28,9 @@
 #include "kdl/result.h"
 
 #include <functional>
+#ifndef __WASM__
 #include <future>
+#endif
 #include <iostream>
 #include <memory>
 #include <variant>
@@ -64,7 +66,7 @@ public:
 };
 
 using Task = std::function<std::unique_ptr<TaskResult>()>;
-using TaskRunner = std::function<std::future<std::unique_ptr<TaskResult>>(Task)>;
+using TaskRunner = std::function<std::unique_ptr<TaskResult>(Task)>;
 
 template <typename T>
 struct ResourceUnloaded
@@ -77,7 +79,7 @@ struct ResourceUnloaded
 template <typename T>
 struct ResourceLoading
 {
-  std::future<std::unique_ptr<TaskResult>> future;
+  std::unique_ptr<TaskResult> future;
 
   kdl_reflect_inline_empty(ResourceLoading);
 };
@@ -141,24 +143,23 @@ namespace detail
 template <typename T>
 ResourceState<T> triggerLoading(ResourceUnloaded<T> state, TaskRunner taskRunner)
 {
-  auto future = taskRunner([loader = std::move(state.loader)]() {
-    return std::make_unique<LoaderTaskResult<T>>(loader());
-  });
+  auto loader = std::move(state.loader);
+  auto future = std::make_unique<LoaderTaskResult<T>>(loader());
   return ResourceLoading<T>{std::move(future)};
 }
 
 template <typename T>
 ResourceState<T> finishLoading(ResourceLoading<T> state)
 {
-  if (state.future.wait_for(std::chrono::seconds{0}) == std::future_status::ready)
+  if (true /*state.future.wait_for(std::chrono::seconds{0}) == std::future_status::ready*/)
   {
-    if (!state.future.valid())
+    if (!state.future)
     {
       return ResourceFailed{"Invalid future"};
     }
 
     auto taskResult = state.future.get();
-    auto loaderTaskResult = static_cast<LoaderTaskResult<T>*>(taskResult.get());
+    auto loaderTaskResult = static_cast<LoaderTaskResult<T>*>(taskResult);
 
     return std::move(loaderTaskResult->get())
            | kdl::transform([](auto value) -> ResourceState<T> {

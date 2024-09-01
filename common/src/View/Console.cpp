@@ -23,7 +23,9 @@
 #include <QMutexLocker>
 #include <QScrollBar>
 #include <QTextEdit>
+#ifndef __WASM__
 #include <QThread>
+#endif
 #include <QTimer>
 #include <QVBoxLayout>
 
@@ -93,9 +95,11 @@ void Console::logToDebugOut(const LogLevel /* level */, const std::string& messa
 
 void Console::logToConsole(const LogLevel level, const std::string& message)
 {
+#ifndef __WASM__
   ensure(
     m_textView->thread() == QThread::currentThread(),
     "Can only log to console from main thread");
+#endif
 
   auto format = QTextCharFormat{};
   format.setForeground(getForegroundBrush(level, m_textView->palette()));

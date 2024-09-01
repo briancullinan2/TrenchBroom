@@ -19,6 +19,13 @@
 
 #pragma once
 
+#if defined(__WASM__)
+#define GL_GLEXT_PROTOTYPES 1
+#undef GL_RGBA8
+#define GL_RGBA8 GL_RGBA
+#undef GL_RGB8
+#define GL_RGB8 GL_RGB
+#endif
 #include <GL/glew.h> // must be included here, before QOpenGLWidget
 
 #include <QElapsedTimer>

@@ -22,7 +22,9 @@
 #include "Logger.h"
 #include "LoggerCache.h"
 
+#ifndef __WASM__
 #include <mutex>
+#endif
 #include <string_view>
 
 namespace TrenchBroom::View
@@ -32,7 +34,9 @@ class CachingLogger : public Logger
 {
 private:
   LoggerCache m_cache;
+#ifndef __WASM__
   std::mutex m_cacheMutex;
+#endif
 
   Logger* m_parentLogger = nullptr;
 

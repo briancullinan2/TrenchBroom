@@ -36,7 +36,9 @@ along with TrenchBroom. If not, see <http://www.gnu.org/licenses/>.
 #include <chrono>
 #include <condition_variable>
 #include <filesystem>
+#ifndef __WASM__
 #include <mutex>
+#endif
 #include <thread>
 
 #include "Catch2.h"

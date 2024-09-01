@@ -1,3 +1,24 @@
 [submodule "vcpkg"]
 	path = vcpkg
 	url = https://github.com/Microsoft/vcpkg.git
+[submodule "fmt"]
+	path = fmt
+	url = https://github.com/fmtlib/fmt
+[submodule "FreeImage"]
+	path = FreeImage
+	url = https://github.com/danoli3/FreeImage
+[submodule "assimp"]
+	path = assimp
+	url = https://github.com/assimp/assimp
+[submodule "tinyxml2"]
+	path = tinyxml2
+	url = https://github.com/leethomason/tinyxml2
+[submodule "qt5"]
+	path = qt5
+	url = https://github.com/qt/qt5
+[submodule "miniz"]
+	path = miniz
+	url = https://github.com/richgel999/miniz
+[submodule "freetype"]
+	path = freetype
+	url = https://github.com/freetype/freetype
