@@ -39,7 +39,7 @@ PopupWindow::PopupWindow(QWidget* parent)
 
 void PopupWindow::positionTouchingWidget(QWidget* refWidget)
 {
-  const QRect screenGeom = QApplication::desktop()->availableGeometry(refWidget);
+  const QRect screenGeom = QRect(0, 0, 640, 480); // QApplication::desktop()->availableGeometry(refWidget);
   const QRect refWidgetRectOnScreen =
     QRect(refWidget->mapToGlobal(QPoint(0, 0)), refWidget->size());
   const QSize ourSize = size();

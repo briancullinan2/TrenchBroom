@@ -130,7 +130,9 @@ find_package(tinyxml2 CONFIG REQUIRED)
 # Find Qt and OpenGL
 find_package(OpenGL REQUIRED)
 find_package(Qt5 COMPONENTS Core Widgets Svg Test REQUIRED)
+
 else()
+
 include_directories(${CMAKE_SOURCE_DIR}/darwin/wasi-sdk-22.0/share/wasi-sysroot/include/wasm32-wasi/c++/v1)
 include_directories(${CMAKE_SOURCE_DIR}/darwin/wasi-sdk-22.0/share/wasi-sysroot/include/wasm32-wasi)
 include_directories(${CMAKE_SOURCE_DIR}/fmt/include)
@@ -149,6 +151,14 @@ include_directories(${CMAKE_SOURCE_DIR}/tinyxml2)
 include_directories(${CMAKE_SOURCE_DIR}/miniz)
 include_directories(${CMAKE_SOURCE_DIR}/freetype/include)
 include_directories(${CMAKE_SOURCE_DIR}/wasm)
+
+target_link_libraries(${MPEngine}
+${MPDir}/wasm/${COMPILE_PLATFORM}/wasi-sdk-22.0/share/wasi-sysroot/lib/wasm32-wasi/libc++.a
+${MPDir}/wasm/${COMPILE_PLATFORM}/wasi-sdk-22.0/share/wasi-sysroot/lib/wasm32-wasi/libc++abi.a
+${MPDir}/wasm/${COMPILE_PLATFORM}/wasi-sdk-22.0/share/wasi-sysroot/lib/wasm32-wasi/libc.a
+${MPDir}/wasm/${COMPILE_PLATFORM}/wasi-sdk-22.0/lib/clang/18/lib/wasi/libclang_rt.builtins-wasm32.a
+)
+
 endif()
 
 # Qt will warn about API's that were deprecated after 5.9.5.

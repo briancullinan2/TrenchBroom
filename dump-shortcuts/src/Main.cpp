@@ -235,7 +235,9 @@ int main(int argc, char* argv[])
   }
 
   QTextStream out(&file);
+#ifndef __WASM__
   out.setCodec("UTF-8");
+#endif
 
   TrenchBroom::PreferenceManager::createInstance<TrenchBroom::AppPreferenceManager>();
 

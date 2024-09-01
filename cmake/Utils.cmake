@@ -90,7 +90,7 @@ endmacro(SET_XCODE_ATTRIBUTES)
 macro(set_compiler_config TARGET)
     if(COMPILER_IS_CLANG)
         # disable warning about duplicate libraries, see https://gitlab.kitware.com/cmake/cmake/-/issues/25297
-        if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 15)
+        if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 15 AND NOT WASM)
             target_link_options(${TARGET} PRIVATE LINKER:-no_warn_duplicate_libraries)
         endif()
 
