@@ -682,10 +682,11 @@ typedef khronos_uint16_t GLhalf;
 #define GL_DEPTH                          0x1801
 #define GL_STENCIL                        0x1802
 #define GL_RED                            0x1903
-#define GL_RGB8                           0x8051
 #ifdef __WASM__
-#define GL_RGBA8                          GL_RGB8
+#define GL_RGB8                           GL_RGB
+#define GL_RGBA8                          GL_RGBA
 #else
+#define GL_RGB8                           0x8051
 #define GL_RGBA8                          0x8058
 #endif
 #define GL_RGB10_A2                       0x8059
