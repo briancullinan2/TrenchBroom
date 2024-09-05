@@ -31,7 +31,6 @@
 #include <QPushButton>
 #include <QStatusBar>
 #include <QString>
-#include <QRegExp>
 #include <QStringList>
 #include <QTableWidget>
 #include <QTimer>
@@ -1523,7 +1522,7 @@ void MapFrame::selectByLineNumber()
     if (!string.isEmpty())
     {
       auto positions = std::vector<size_t>{};
-      for (const auto& token : (QRegExp{"[, ]"}).splitString(string))
+      for (const auto& token : string.split(QRegExp{"[, ]"}))
       {
         bool ok;
         const auto position = token.toLong(&ok);

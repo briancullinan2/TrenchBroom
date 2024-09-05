@@ -1029,70 +1029,85 @@ set(COMMON_HEADER
 )
 
 add_library(common OBJECT ${COMMON_SOURCE} ${COMMON_HEADER})
-if(!WASM)
-set_target_properties(common PROPERTIES AUTOMOC TRUE)
-endif()
+#set_target_properties(common PROPERTIES AUTOMOC TRUE)
 target_include_directories(common PUBLIC ${COMMON_SOURCE_DIR})
-if(!WASM)
-target_link_libraries(common PUBLIC tinyxml2::tinyxml2 kdl vm GLEW::GLEW miniz::miniz freeimage::FreeImage freetype OpenGL::GL Qt5::Widgets Qt5::Svg fmt::fmt assimp::assimp)
-endif()
+# target_link_libraries(common PUBLIC tinyxml2::tinyxml2 kdl vm GLEW::GLEW miniz::miniz freeimage::FreeImage freetype OpenGL::GL Qt5::Widgets Qt5::Svg fmt::fmt assimp::assimp)
+#target_compile_options(common PUBLIC -L${COMMON_SOURCE_DIR}/../../wasm)
+#target_compile_options(common PUBLIC -L)
+target_include_directories(common PUBLIC ${COMMON_SOURCE_DIR}/../../wasm)
+target_include_directories(common PUBLIC ${COMMON_SOURCE_DIR}/../../lib/kdl/include)
+target_include_directories(common PUBLIC ${COMMON_SOURCE_DIR}/../../lib/vm/include)
+target_include_directories(common PUBLIC ${COMMON_SOURCE_DIR}/../../lib/vm/include)
+target_include_directories(common PUBLIC /qtbase/include/)
+target_include_directories(common PUBLIC /qtbase/include/QtCore/)
+target_include_directories(common PUBLIC /qtbase/include/QtGui/)
+target_include_directories(common PUBLIC /qtbase/include/QtWidgets/)
+target_include_directories(common PUBLIC /qtbase/include/QtSvg/)
+#target_include_directories(common PUBLIC /emsdk/upstream/include/c++/v1)
+
+add_compile_options(-D__EMSCRIPTEN__=1)
+add_compile_options(-D_WASI_EMULATED_SIGNAL -D_WASI_EMULATED_MMAN=1)
+
+add_compile_options(-D__WASM__=1)
+add_compile_options(-D__wasi__=1)
+add_compile_options(-D__wasm32__=1)
 
 # use precompiled headers on CMake 3.16 or later
-if (NOT TB_SUPPRESS_PCH AND ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.16.0")
-    message(STATUS "Using precompiled headers")
-    target_precompile_headers(common PUBLIC
-            <algorithm>
-            <any>
-            <array>
-            <cassert>
-            <chrono>
-            <cstddef>
-            <cstdio>
-            <cstdlib>
-            <ctime>
-            <filesystem>
-            <functional>
-            <initializer_list>
-            <iterator>
-            <iostream>
-            <istream>
-            <limits>
-            <list>
-            <map>
-            <memory>
-            <optional>
-            <ostream>
-            <ranges>
-            <set>
-            <string>
-            <tuple>
-            <type_traits>
-            <unordered_map>
-            <unordered_set>
-            <utility>
-            <variant>
-            <vector>
+# if (NOT TB_SUPPRESS_PCH AND ${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.16.0")
+#     message(STATUS "Using precompiled headers")
+#     target_precompile_headers(common PUBLIC
+#             <algorithm>
+#             <any>
+#             <array>
+#             <cassert>
+#             <chrono>
+#             <cstddef>
+#             <cstdio>
+#             <cstdlib>
+#             <ctime>
+#             <filesystem>
+#             <functional>
+#             <initializer_list>
+#             <iterator>
+#             <iostream>
+#             <istream>
+#             <limits>
+#             <list>
+#             <map>
+#             <memory>
+#             <optional>
+#             <ostream>
+#             <ranges>
+#             <set>
+#             <string>
+#             <tuple>
+#             <type_traits>
+#             <unordered_map>
+#             <unordered_set>
+#             <utility>
+#             <variant>
+#             <vector>
 
-            <QApplication>
-            <QBoxLayout>
-            <QCheckBox>
-            <QDebug>
-            <QEvent>
-            <QtGlobal>
-            <QGridLayout>
-            <QHBoxLayout>
-            <QLabel>
-            <QLineEdit>
-            <QObject>
-            <QPushButton>
-            <QString>
-            <QStringBuilder>
-            <QVBoxLayout>
-            <QWidget>
-    )
-else()
+#             <QApplication>
+#             <QBoxLayout>
+#             <QCheckBox>
+#             <QDebug>
+#             <QEvent>
+#             <QtGlobal>
+#             <QGridLayout>
+#             <QHBoxLayout>
+#             <QLabel>
+#             <QLineEdit>
+#             <QObject>
+#             <QPushButton>
+#             <QString>
+#             <QStringBuilder>
+#             <QVBoxLayout>
+#             <QWidget>
+#     )
+# else()
     message(STATUS "Not using precompiled headers")
-endif()
+# endif()
 
 # Organize files into IDE folders
 source_group(TREE "${COMMON_SOURCE_DIR}" FILES ${COMMON_SOURCE} ${COMMON_HEADER})
@@ -1115,7 +1130,5 @@ target_include_directories(common PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 add_custom_target(generate_version ${CMAKE_COMMAND} -P "${CMAKE_CURRENT_BINARY_DIR}/GenerateVersion.cmake")
 add_dependencies(common generate_version)
 
-if(!WASM)
-add_subdirectory(test)
-add_subdirectory(benchmark)
-endif()
+# add_subdirectory(test)
+# add_subdirectory(benchmark)

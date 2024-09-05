@@ -17,17 +17,15 @@
  along with TrenchBroom. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifdef _WIN32
-#ifdef _MSC_VER
-#include <QMutexLocker>
+// #ifdef _WIN32
+// #ifdef _MSC_VER
+// #include <QMutexLocker>
 
-#ifndef __WASM__
-#include "StackWalker.h"
-#endif
-#else
-#include <execinfo.h>
-#endif
-#endif
+// #include "StackWalker.h"
+// #endif
+// #else
+// #include <execinfo.h>
+// #endif
 
 #include "TrenchBroomStackWalker.h"
 
@@ -107,21 +105,19 @@ std::string TrenchBroomStackWalker::getStackTrace()
   const int MaxDepth = 256;
   void* callstack[MaxDepth];
   std::stringstream ss;
-#ifndef __WASM__
-  const int frames = backtrace(callstack, MaxDepth);
+  // const int frames = backtrace(callstack, MaxDepth);
 
-  // copy into a vector
-  std::vector<void*> framesVec(callstack, callstack + frames);
-  if (framesVec.empty())
-    return "";
+  // // copy into a vector
+  // std::vector<void*> framesVec(callstack, callstack + frames);
+  // if (framesVec.empty())
+  //   return "";
 
-  char** strs = backtrace_symbols(&framesVec.front(), static_cast<int>(framesVec.size()));
-  for (size_t i = 0; i < framesVec.size(); i++)
-  {
-    ss << strs[i] << std::endl;
-  }
-  free(strs);
-#endif
+  // char** strs = backtrace_symbols(&framesVec.front(), static_cast<int>(framesVec.size()));
+  // for (size_t i = 0; i < framesVec.size(); i++)
+  // {
+  //   ss << strs[i] << std::endl;
+  // }
+  // free(strs);
   return ss.str();
 }
 #endif

@@ -72,9 +72,7 @@
 
 #include <chrono>
 #include <clocale>
-#ifndef __WASM__
 #include <csignal>
-#endif
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
@@ -131,9 +129,7 @@ TrenchBroomApp::TrenchBroomApp(int& argc, char** argv)
   // see also: http://crashrpt.sourceforge.net/docs/html/exception_handling.html
   SetUnhandledExceptionFilter(TrenchBroomUnhandledExceptionFilter);
 #else
-#ifndef __WASM__
   signal(SIGSEGV, CrashHandler);
-#endif
 #endif
 
   // always set this locale so that we can properly parse floats from text files

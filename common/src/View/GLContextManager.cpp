@@ -61,7 +61,6 @@ bool GLContextManager::initialized() const
 
 static void initializeGlew()
 {
-#ifndef __WASM__
   glewExperimental = GL_TRUE;
   const GLenum glewState = glewInit();
   if (glewState != GLEW_OK)
@@ -70,7 +69,6 @@ static void initializeGlew()
     str << "Error initializing glew: " << glewGetErrorString(glewState);
     throw RenderException(str.str());
   }
-#endif
 }
 
 bool GLContextManager::initialize()

@@ -271,17 +271,13 @@ void LaunchGameEngineDialog::launchEngine()
 
     const auto oldWorkDir = QDir::currentPath();
     QDir::setCurrent(workDir);
-#ifndef __WASM__
     const auto success = QProcess::startDetached(commandAndArgs);
-#endif
     QDir::setCurrent(oldWorkDir);
 
-#ifndef __WASM__
     if (!success)
     {
       throw Exception("Unknown error");
     }
-#endif
 #endif
 
     accept();

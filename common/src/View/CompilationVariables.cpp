@@ -29,9 +29,7 @@
 
 #include <memory>
 #include <string>
-#ifndef __WASM__
 #include <thread>
-#endif
 
 namespace TrenchBroom
 {
@@ -100,14 +98,10 @@ CompilationVariables::CompilationVariables(
   std::shared_ptr<MapDocument> document, const std::string& workDir)
   : CommonCompilationVariables{std::move(document)}
 {
-#ifndef __WASM__
   const auto cpuCount = size_t(std::max(std::thread::hardware_concurrency(), 1u));
-#endif
 
   using namespace CompilationVariableNames;
-#ifndef __WASM__
   declare(CPU_COUNT, EL::Value{cpuCount});
-#endif
   declare(WORK_DIR_PATH, EL::Value{workDir});
 }
 

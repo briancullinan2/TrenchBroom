@@ -380,13 +380,8 @@ void InputEventRecorder::recordEvent(const QWheelEvent& qtEvent)
 {
   // These are the mouse X and Y position, not the wheel delta, in points relative to top
   // left of widget.
-#ifndef __WASM__
   const auto posX = static_cast<float>(qtEvent.x());
   const auto posY = static_cast<float>(qtEvent.y());
-#else
-  const auto posX = static_cast<float>(0);
-  const auto posY = static_cast<float>(0);
-#endif
 
   // Number of "lines" to scroll
   QPointF scrollDistance = scrollLinesForEvent(qtEvent);

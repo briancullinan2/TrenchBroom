@@ -24,9 +24,7 @@
 
 #include <miniz/miniz.h>
 
-#ifndef __WASM__
 #include <mutex>
-#endif
 
 namespace TrenchBroom::IO
 {
@@ -36,9 +34,7 @@ class ZipFileSystem : public ImageFileSystem<CFile>
 {
 private:
   mz_zip_archive m_archive;
-#ifndef __WASM__
   std::mutex m_mutex;
-#endif
 
 public:
   using ImageFileSystem::ImageFileSystem;

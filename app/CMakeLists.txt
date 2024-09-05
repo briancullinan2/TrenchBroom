@@ -9,7 +9,6 @@ set(APP_SOURCE
 
 # OS X app bundle configuration, must happen before the executable is added
 if(APPLE)
-    message( FATAL_ERROR "LEARN TO CMAKE." )
     # Configure icons
     set(MACOSX_ICON_FILES "${APP_RESOURCE_DIR}/mac/icons/AppIcon.icns" "${APP_RESOURCE_DIR}/mac/icons/DocIcon.icns")
     set(APP_SOURCE ${APP_SOURCE} ${MACOSX_ICON_FILES})
@@ -116,12 +115,9 @@ macro(configure_app_target APP_TARGET_NAME SHOULD_BUILD_MANUAL)
     endif()
     set_compiler_config(${APP_TARGET_NAME})
 
-    if(!WASM)
     set_target_properties(${APP_TARGET_NAME} PROPERTIES AUTORCC TRUE)
-    endif()
 
     if(APPLE)
-        message( FATAL_ERROR "LEARN TO CMAKE." )
         # Configure variables that are substituted into the plist
         # Set CFBundleName, which controls the application menu label
         set_target_properties(${APP_TARGET_NAME} PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "${APP_TARGET_NAME}")
@@ -188,10 +184,6 @@ macro(configure_app_target APP_TARGET_NAME SHOULD_BUILD_MANUAL)
         # Make executable name conventional lowercase on linux
         string(TOLOWER ${APP_TARGET_NAME} APP_TARGET_NAME_LOWER)
         set_target_properties(${APP_TARGET_NAME} PROPERTIES OUTPUT_NAME ${APP_TARGET_NAME_LOWER})
-    endif()
-
-    if(WASM)
-    set_target_properties(${APP_TARGET_NAME} PROPERTIES OUTPUT_NAME ${APP_TARGET_NAME_LOWER}.wasm)
     endif()
 
     # Set up the resources and DLLs for the executable
@@ -394,7 +386,4 @@ elseif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     configure_file("${CMAKE_CURRENT_SOURCE_DIR}/cmake/PrintLinuxPackageInfo.sh.in" "${CMAKE_CURRENT_BINARY_DIR}/print_linux_package_info.sh" @ONLY)
 endif()
 
-if(!WASM)
 include(CPack)
-endif()
-

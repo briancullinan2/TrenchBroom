@@ -27,16 +27,14 @@
 #endif
 
 #include <atomic>
-//#include <future> // for std::async
+#include <future> // for std::async
 #include <optional>
-//#include <thread>
+#include <thread>
 #include <utility> // for std::declval
 #include <vector>
 
 namespace kdl
 {
-#ifndef __WASM__
-
 /**
  * Runs the given lambda `count` times, passing it indices `0` through `count - 1`.
  *
@@ -89,7 +87,6 @@ void parallel_for(const size_t count, L&& lambda)
   }
 #endif
 }
-#endif
 
 /**
  * Applies the given lambda to each element of the input (passing elements as rvalue
@@ -116,13 +113,10 @@ auto vec_parallel_transform(std::vector<T> input, L&& transform)
   std::vector<ResultType> result;
   result.resize(input.size());
 
-
-  for (size_t i = 0; i < input.size(); ++i)
-  {
-    result[i] = transform(std::move(input[i]));
-  }
+  parallel_for(input.size(), [&](const size_t index) {
+    result[index] = transform(std::move(input[index]));
+  });
 
   return vec_transform(std::move(result), [](ResultType&& x) { return std::move(*x); });
 }
 } // namespace kdl
-

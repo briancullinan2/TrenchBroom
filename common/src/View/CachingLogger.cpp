@@ -24,9 +24,7 @@ namespace TrenchBroom::View
 
 void CachingLogger::setParentLogger(Logger* parentLogger)
 {
-#ifndef __WASM__
   const auto lock = std::lock_guard{m_cacheMutex};
-#endif
 
   m_parentLogger = parentLogger;
   if (m_parentLogger)
@@ -47,9 +45,7 @@ void CachingLogger::doLog(const LogLevel level, const std::string_view message)
 
 bool CachingLogger::cacheMessage(const LogLevel level, const std::string_view message)
 {
-#ifndef __WASM__
   auto lock = std::lock_guard{m_cacheMutex};
-#endif
 
   if (!m_parentLogger)
   {

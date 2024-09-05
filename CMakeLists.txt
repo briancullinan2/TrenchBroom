@@ -16,9 +16,7 @@ if(POLICY CMP0063)
   cmake_policy(SET CMP0063 NEW)
 endif()
 
-if(!CMAKE_TOOLCHAIN_FILE)
-set(CMAKE_TOOLCHAIN_FILE "${CMAKE_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake")
-endif()
+# set(CMAKE_TOOLCHAIN_FILE "${CMAKE_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake")
 set(VCPKG_OVERLAY_PORTS "${CMAKE_SOURCE_DIR}/vcpkg-overlay-ports/freeimage;${CMAKE_SOURCE_DIR}/vcpkg-overlay-ports/openexr")
 
 set(CMAKE_C_VISIBILITY_PRESET hidden)
@@ -89,7 +87,6 @@ endif()
 
 include(cmake/Utils.cmake)
 
-if(!WASM)
 # Find Git
 find_package(Git)
 
@@ -98,17 +95,15 @@ if(NOT GIT_FOUND)
 endif()
 
 # Find Pandoc
-if(NOT PANDOC_PATH)
-  find_program(PANDOC_PATH NAMES "pandoc" DOC "Pandoc program location")
+# if(NOT PANDOC_PATH)
+#   find_program(PANDOC_PATH NAMES "pandoc" DOC "Pandoc program location")
 
-  if(PANDOC_PATH STREQUAL "PANDOC_PATH-NOTFOUND")
-    message(FATAL_ERROR "Could not find pandoc")
-  else()
-    message(STATUS "Found Pandoc: ${PANDOC_PATH}")
-  endif()
-endif()
-
-endif()
+#   if(PANDOC_PATH STREQUAL "PANDOC_PATH-NOTFOUND")
+#     message(FATAL_ERROR "Could not find pandoc")
+#   else()
+#     message(STATUS "Found Pandoc: ${PANDOC_PATH}")
+#   endif()
+# endif()
 
 # Prevent overriding the parent project's compiler/linker
 # settings on Windows
@@ -117,71 +112,18 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 # Prevent gtest from being installed
 set(INSTALL_GTEST OFF CACHE BOOL "" FORCE)
 
-if(!WASM)
-find_package(assimp CONFIG REQUIRED)
-find_package(freeimage CONFIG REQUIRED)
-find_package(freetype CONFIG REQUIRED)
-find_package(Catch2 CONFIG REQUIRED)
-find_package(fmt CONFIG REQUIRED)
-find_package(GLEW REQUIRED)
-find_package(miniz CONFIG REQUIRED)
-find_package(tinyxml2 CONFIG REQUIRED)
+# find_package(assimp CONFIG REQUIRED)
+# find_package(freeimage CONFIG REQUIRED)
+# find_package(freetype CONFIG REQUIRED)
+# find_package(Catch2 CONFIG REQUIRED)
+# find_package(fmt CONFIG REQUIRED)
+# find_package(GLEW REQUIRED)
+# find_package(miniz CONFIG REQUIRED)
+# find_package(tinyxml2 CONFIG REQUIRED)
 
 # Find Qt and OpenGL
 find_package(OpenGL REQUIRED)
-find_package(Qt5 COMPONENTS Core Widgets Svg Test REQUIRED)
-
-else()
-
-include_directories(${CMAKE_SOURCE_DIR}/darwin/wasi-sdk-22.0/share/wasi-sysroot/include/wasm32-wasi/c++/v1)
-include_directories(${CMAKE_SOURCE_DIR}/darwin/wasi-sdk-22.0/share/wasi-sysroot/include/wasm32-wasi)
-include_directories(${CMAKE_SOURCE_DIR}/fmt/include)
-include_directories(${CMAKE_SOURCE_DIR}/qt5/qtbase/include)
-include_directories(${CMAKE_SOURCE_DIR}/qt5/qtbase/include/QtCore)
-include_directories(${CMAKE_SOURCE_DIR}/qt5/qtbase/include/QtCore5Compat)
-include_directories(${CMAKE_SOURCE_DIR}/qt5/qtbase/include/QtGui)
-include_directories(${CMAKE_SOURCE_DIR}/qt5/qtbase/include/QtSvg)
-include_directories(${CMAKE_SOURCE_DIR}/qt5/qtbase/include/QtWidgets)
-include_directories(${CMAKE_SOURCE_DIR}/qt5/qtbase/include/QtOpenGLWidgets)
-include_directories(${CMAKE_SOURCE_DIR}/lib/kdl/include)
-include_directories(${CMAKE_SOURCE_DIR}/lib/vm/include)
-include_directories(${CMAKE_SOURCE_DIR}/FreeImage/Source)
-include_directories(${CMAKE_SOURCE_DIR}/assimp/include)
-include_directories(${CMAKE_SOURCE_DIR}/tinyxml2)
-include_directories(${CMAKE_SOURCE_DIR}/miniz)
-include_directories(${CMAKE_SOURCE_DIR}/freetype/include)
-include_directories(${CMAKE_SOURCE_DIR}/wasm)
-
-add_compile_options(-fvisibility=default)
-add_compile_options(--target=wasm32-wasi)
-# add_compile_options(-fno-rtti)
-add_compile_options(-fno-inline)
-add_compile_options(-fPIC)
-add_compile_options(-fno-short-enums)
-add_compile_options(-ftree-vectorize -fsigned-char)
-add_compile_options(-Wimplicit)
-add_compile_options(-fno-common)
-add_compile_options(--no-standard-libraries)
-add_compile_options(-fstrict-aliasing)
-add_compile_options(-fwasm-exceptions)
-add_compile_options(-Wno-sign-conversion)
-
-add_link_options(
-  /Users/briancullinan/emsdk/darwin/wasi-sdk-22.0/share/wasi-sysroot/lib/wasm32-wasi/libc++experimental.a
-  /Users/briancullinan/emsdk/darwin/wasi-sdk-22.0/share/wasi-sysroot/lib/wasm32-wasi/libc++abi.a
-  /Users/briancullinan/emsdk/darwin/wasi-sdk-22.0/share/wasi-sysroot/lib/wasm32-wasi/libc++.a
-  /Users/briancullinan/emsdk/darwin/wasi-sdk-22.0/share/wasi-sysroot/lib/wasm32-wasi/librt.a
-  /Users/briancullinan/emsdk/darwin/wasi-sdk-22.0/share/wasi-sysroot/lib/wasm32-wasi/libc.a
-  /Users/briancullinan/emsdk/darwin/wasi-sdk-22.0/share/wasi-sysroot/lib/wasm32-wasi/libsetjmp.a
-  /Users/briancullinan/emsdk/darwin/wasi-sdk-22.0/lib/clang/18/lib/wasi/libclang_rt.builtins-wasm32.a
-  ${CMAKE_SOURCE_DIR}/qt5/qtbase/lib/libQt6Core.a
-  ${CMAKE_SOURCE_DIR}/qt5/qtbase/lib/libQt6Gui.a
-  ${CMAKE_SOURCE_DIR}/qt5/qtbase/lib/libQt6Widgets.a
-)
-add_link_options(-Wl,--import-memory,--import-table)
-add_link_options(-Wl,--error-limit=0)
-
-endif()
+#find_package(Qt5 COMPONENTS Core Widgets Svg REQUIRED)
 
 # Qt will warn about API's that were deprecated after 5.9.5.
 # Since we're not raising our minimum Qt version, and can't use the replacement
@@ -190,22 +132,16 @@ add_compile_definitions(QT_NO_DEPRECATED_WARNINGS=1)
 
 # Find threads lib, needed to work around a gtest bug, see: https://stackoverflow.com/questions/21116622/undefined-reference-to-pthread-key-create-linker-error
 # The googletest target links to this
-if( !WASM )
-find_package(Threads)
+# find_package(Threads)
 
 # Populate version variables using git
 get_git_describe("${GIT_EXECUTABLE}" "${CMAKE_SOURCE_DIR}" GIT_DESCRIBE)
 get_app_version(GIT_DESCRIBE APP_VERSION_YEAR APP_VERSION_NUMBER)
 set(APP_BUILD_TYPE "${CMAKE_BUILD_TYPE}")
-endif()
 
 # Some global variables used in several targets
 set(APP_DIR "${CMAKE_SOURCE_DIR}/app")
 set(APP_RESOURCE_DIR "${APP_DIR}/resources")
-
-if( !WASM )
-  message( FATAL_ERROR "LEARN TO CMAKE." )
-endif()
 
 add_subdirectory(lib)
 add_subdirectory(dump-shortcuts)

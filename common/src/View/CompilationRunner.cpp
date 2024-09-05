@@ -21,9 +21,7 @@
 
 #include <QDir>
 #include <QMetaEnum>
-#ifndef __WASM__
 #include <QProcess>
-#endif
 #include <QtGlobal>
 
 #include "Error.h"
@@ -266,12 +264,76 @@ void CompilationRunToolTaskRunner::doExecute()
 
 void CompilationRunToolTaskRunner::doTerminate()
 {
-
+  if (m_process)
+  {
+    disconnect(
+      m_process,
+      &QProcess::errorOccurred,
+      this,
+      &CompilationRunToolTaskRunner::processErrorOccurred);
+    disconnect(
+      m_process,
+      QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
+      this,
+      &CompilationRunToolTaskRunner::processFinished);
+    m_process->kill();
+    m_context << "\n\n#### Terminated\n";
+  }
 }
 
 void CompilationRunToolTaskRunner::startProcess()
 {
+  assert(m_process == nullptr);
 
+  emit start();
+  try
+  {
+    const auto workDir = m_context.variableValue(CompilationVariableNames::WORK_DIR_PATH);
+    const auto cmd = this->cmd();
+
+    m_context << "#### Executing '" << QString::fromStdString(cmd) << "'\n";
+
+    if (!m_context.test())
+    {
+      m_process = new QProcess{this};
+      connect(
+        m_process,
+        &QProcess::errorOccurred,
+        this,
+        &CompilationRunToolTaskRunner::processErrorOccurred);
+      connect(
+        m_process,
+        QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
+        this,
+        &CompilationRunToolTaskRunner::processFinished);
+      connect(
+        m_process,
+        &QProcess::readyReadStandardError,
+        this,
+        &CompilationRunToolTaskRunner::processReadyReadStandardError);
+      connect(
+        m_process,
+        &QProcess::readyReadStandardOutput,
+        this,
+        &CompilationRunToolTaskRunner::processReadyReadStandardOutput);
+
+      m_process->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
+      m_process->setWorkingDirectory(QString::fromStdString(workDir));
+      m_process->start(QString::fromStdString(cmd));
+      if (!m_process->waitForStarted())
+      {
+        emit error();
+      }
+    }
+    else
+    {
+      emit end();
+    }
+  }
+  catch (const Exception&)
+  {
+    emit error();
+  }
 }
 
 std::string CompilationRunToolTaskRunner::cmd()
@@ -292,12 +354,54 @@ std::string CompilationRunToolTaskRunner::cmd()
   }
 }
 
+void CompilationRunToolTaskRunner::processErrorOccurred(
+  const QProcess::ProcessError processError)
+{
+  m_context << "#### Error '"
+            << QMetaEnum::fromType<QProcess::ProcessError>().valueToKey(processError)
+            << "' occurred when communicating with process\n\n";
+  emit error();
+}
+
+void CompilationRunToolTaskRunner::processFinished(
+  const int exitCode, const QProcess::ExitStatus exitStatus)
+{
+  switch (exitStatus)
+  {
+  case QProcess::NormalExit:
+    m_context << "#### Finished with exit code " << exitCode << "\n\n";
+    if (exitCode == 0 || !m_task.treatNonZeroResultCodeAsError)
+    {
+      emit end();
+    }
+    else
+    {
+      emit error();
+    }
+    break;
+  case QProcess::CrashExit:
+    m_context << "#### Crashed with exit code " << exitCode << "\n\n";
+    emit error();
+    break;
+  }
+}
+
 void CompilationRunToolTaskRunner::processReadyReadStandardError()
 {
+  if (m_process != nullptr)
+  {
+    const QByteArray bytes = m_process->readAllStandardError();
+    m_context << QString::fromLocal8Bit(bytes);
+  }
 }
 
 void CompilationRunToolTaskRunner::processReadyReadStandardOutput()
 {
+  if (m_process != nullptr)
+  {
+    const QByteArray bytes = m_process->readAllStandardOutput();
+    m_context << QString::fromLocal8Bit(bytes);
+  }
 }
 
 CompilationRunner::CompilationRunner(
@@ -361,17 +465,43 @@ CompilationRunner::TaskRunnerList CompilationRunner::createTaskRunners(
 
 void CompilationRunner::execute()
 {
-  
+  assert(!running());
+
+  m_currentTask = std::begin(m_taskRunners);
+  if (m_currentTask == std::end(m_taskRunners))
+  {
+    return;
+  }
+  bindEvents(*m_currentTask->get());
+
+  emit compilationStarted();
+
+  const auto workDir = QString::fromStdString(
+    m_context.variableValue(CompilationVariableNames::WORK_DIR_PATH));
+  if (!QDir{workDir}.exists())
+  {
+    m_context << "#### Error: working directory '" << workDir << "' does not exist\n";
+  }
+  else
+  {
+    m_context << "#### Using working directory '" << workDir << "'\n";
+  }
+  m_currentTask->get()->execute();
 }
 
 void CompilationRunner::terminate()
 {
- 
+  assert(running());
+  unbindEvents(*m_currentTask->get());
+  m_currentTask->get()->terminate();
+  m_currentTask = std::end(m_taskRunners);
+
+  emit compilationEnded();
 }
 
 bool CompilationRunner::running() const
 {
-  return false;
+  return m_currentTask != std::end(m_taskRunners);
 }
 
 void CompilationRunner::bindEvents(CompilationTaskRunner& runner) const

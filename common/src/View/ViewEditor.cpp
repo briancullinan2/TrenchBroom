@@ -518,7 +518,6 @@ QWidget* ViewEditor::createRendererPanel(QWidget* parent)
   connect(
     m_showEdgesCheckBox, &QAbstractButton::clicked, this, &ViewEditor::showEdgesChanged);
 
-#ifndef __WASM__
   connect(
     m_renderModeRadioGroup,
     static_cast<void (QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked),
@@ -529,7 +528,6 @@ QWidget* ViewEditor::createRendererPanel(QWidget* parent)
     static_cast<void (QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked),
     this,
     &ViewEditor::entityLinkModeChanged);
-#endif
 
   connect(
     m_showSoftBoundsCheckBox,

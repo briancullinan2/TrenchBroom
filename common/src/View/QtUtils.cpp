@@ -60,9 +60,7 @@
 #include <QGuiApplication>
 #else
 #include <QApplication>
-#ifndef __WASM__
 #include <QDesktopWidget>
-#endif
 #endif
 
 namespace TrenchBroom
@@ -214,7 +212,6 @@ void setHint(QLineEdit* ctrl, const char* hint)
 
 void centerOnScreen(QWidget* window)
 {
-#ifndef __WASM__
 #if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
   const auto* screen =
     QGuiApplication::screenAt(window->mapToGlobal({window->width() / 2, 0}));
@@ -226,9 +223,8 @@ void centerOnScreen(QWidget* window)
 #else
   const auto screenGeometry = QApplication::desktop()->availableGeometry(window);
 #endif
-#endif
   window->setGeometry(QStyle::alignedRect(
-    Qt::LeftToRight, Qt::AlignCenter, window->size(), QRect(0, 0, 640, 480)));
+    Qt::LeftToRight, Qt::AlignCenter, window->size(), screenGeometry));
 }
 
 QWidget* makeDefault(QWidget* widget)

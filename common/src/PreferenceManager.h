@@ -23,9 +23,7 @@
 #include <QByteArray>
 #include <QJsonParseError>
 #include <QString>
-#ifndef __WASM__
 #include <QThread>
-#endif
 #include <QTimer>
 
 #include "Ensure.h"

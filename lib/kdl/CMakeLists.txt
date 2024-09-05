@@ -15,10 +15,8 @@ target_include_directories(kdl INTERFACE
         $<INSTALL_INTERFACE:kdl/include/kdl>)
 
 # parallel.h uses <thread>, etc., which requires this on Linux
-if(!WASM)
-find_package(Threads REQUIRED)
+# find_package(Threads REQUIRED)
 target_link_libraries(kdl INTERFACE Threads::Threads)
-endif()
 
 target_sources(kdl INTERFACE
     "${KDL_INCLUDE_DIR}/kdl/binary_relation.h"
@@ -95,7 +93,5 @@ endif()
 # settings on Windows
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 
-if(!WASM)
 # add_subdirectory(lib)
-add_subdirectory(test)
-endif()
+# add_subdirectory(test)

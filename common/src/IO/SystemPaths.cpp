@@ -62,7 +62,7 @@ std::filesystem::path userDataDirectory()
   {
     return appDirectory() / "config";
   }
-#if defined __linux__ || defined __FreeBSD__ || __WASM__
+#if defined __linux__ || defined __FreeBSD__
   // Compatibility with wxWidgets
   return IO::pathFromQString(QDir::homePath()) / ".TrenchBroom";
 #else

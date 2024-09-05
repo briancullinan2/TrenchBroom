@@ -22,7 +22,6 @@
 #include <QInputDialog>
 #include <QMessageBox>
 #include <QString>
-#include <QStringList>
 #include <QWidget>
 
 #include "Assets/EntityDefinitionFileSpec.h"

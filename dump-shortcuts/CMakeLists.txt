@@ -9,11 +9,13 @@ set(DUMP_SHORTCUTS_SOURCE ${DUMP_SHORTCUTS_SOURCE} ${INDEX_OUTPUT_PATH} ${DOC_MA
 add_executable(dump-shortcuts ${DUMP_SHORTCUTS_SOURCE})
 target_include_directories(dump-shortcuts PRIVATE ${DUMP_SHORTCUTS_SOURCE_DIR})
 target_link_libraries(dump-shortcuts PRIVATE common)
-if(!WASM)
 set_target_properties(dump-shortcuts PROPERTIES AUTOMOC TRUE)
-endif()
+target_link_options(dump-shortcuts PUBLIC -error-limit=0)
 
 set_compiler_config(dump-shortcuts)
+# target_link_options(dump-shortcuts PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../wasm/libc++abi.a)
+target_link_options(dump-shortcuts PUBLIC /qtbase/lib/libQt5Core.a)
+target_link_options(dump-shortcuts PUBLIC /qtbase/lib/libqtpcre2.a)
 
 # Organize files into IDE folders
 source_group(TREE "${COMMON_TEST_SOURCE_DIR}" FILES ${COMMON_TEST_SOURCE})
